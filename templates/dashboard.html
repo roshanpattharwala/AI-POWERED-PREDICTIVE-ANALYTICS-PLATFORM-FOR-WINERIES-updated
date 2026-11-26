@@ -1,0 +1,707 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- ==========================================================
+     DASHBOARD TITLE
+=========================================================== -->
+
+<section class="page-title">
+
+    <h2>Wine Quality Prediction Dashboard</h2>
+
+    <p>
+        Intelligent Machine Learning Platform for Predicting
+        Wine Quality using Physicochemical Properties
+    </p>
+
+</section>
+
+
+<!-- ==========================================================
+     DASHBOARD LAYOUT
+=========================================================== -->
+
+<section class="dashboard">
+
+    <!-- ======================================================
+         LEFT PANEL
+    ======================================================= -->
+
+    <div class="left-panel">
+
+        <!-- MODEL INFORMATION -->
+
+        <div class="card">
+
+            <h3>
+                <i class="fas fa-microchip"></i>
+                Model Information
+            </h3>
+
+            <div class="model-card">
+
+                <ul>
+
+                    <li>
+                        <strong>Model Name</strong>
+                        <span>{{ model_name }}</span>
+                    </li>
+
+                    <li>
+                        <strong>Model Type</strong>
+                        <span>{{ model_type }}</span>
+                    </li>
+
+                    <li>
+                        <strong>Cross Validation Score</strong>
+                        <span>{{ cv_score }}</span>
+                    </li>
+
+                    <li>
+                        <strong>Number of Features</strong>
+                        <span>{{ feature_count }}</span>
+                    </li>
+
+                    <li>
+                        <strong>Deployment Status</strong>
+                        <span class="badge badge-success">
+                            Active
+                        </span>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             WINE PREDICTION FORM
+        =================================================== -->
+
+        <div class="card" id="prediction">
+
+            <h3>
+                <i class="fas fa-wine-glass"></i>
+                Wine Quality Prediction
+            </h3>
+
+            <p class="form-description">
+                Enter the physicochemical properties of a wine
+                sample to predict its quality.
+            </p>
+
+            <form
+                action="{{ url_for('predict') }}"
+                method="POST">
+
+                <fieldset>
+
+                    <legend>Wine Chemical Properties</legend>
+
+                    <div class="form-grid">
+
+                        <!-- Fixed Acidity -->
+
+                        <div class="form-group">
+                            <label>Fixed Acidity</label>
+                            <input
+                                type="number"
+                                min="0"
+                                max="14"
+                                step="0.01"
+                                name="fixed_acidity"
+                                placeholder="Example: 7.4"
+                                required>
+                        </div>
+
+
+                        <!-- Volatile Acidity -->
+
+                        <div class="form-group">
+                            <label>Volatile Acidity</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="volatile_acidity"
+                                placeholder="Example: 0.70"
+                                required>
+                        </div>
+
+
+                        <!-- Citric Acid -->
+
+                        <div class="form-group">
+                            <label>Citric Acid</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="citric_acid"
+                                placeholder="Example: 0.00"
+                                required>
+                        </div>
+
+
+                        <!-- Residual Sugar -->
+
+                        <div class="form-group">
+                            <label>Residual Sugar</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="residual_sugar"
+                                placeholder="Example: 1.90"
+                                required>
+                        </div>
+
+
+                        <!-- Chlorides -->
+
+                        <div class="form-group">
+                            <label>Chlorides</label>
+                            <input
+                                type="number"
+                                step="0.001"
+                                name="chlorides"
+                                placeholder="Example: 0.076"
+                                required>
+                        </div>
+
+
+                        <!-- Free Sulfur Dioxide -->
+
+                        <div class="form-group">
+                            <label>Free Sulfur Dioxide</label>
+                            <input
+                                type="number"
+                                step="1"
+                                name="free_sulfur_dioxide"
+                                placeholder="Example: 11"
+                                required>
+                        </div>
+
+
+                        <!-- Total Sulfur Dioxide -->
+
+                        <div class="form-group">
+                            <label>Total Sulfur Dioxide</label>
+                            <input
+                                type="number"
+                                step="1"
+                                name="total_sulfur_dioxide"
+                                placeholder="Example: 34"
+                                required>
+                        </div>
+
+
+                        <!-- Density -->
+
+                        <div class="form-group">
+                            <label>Density</label>
+                            <input
+                                type="number"
+                                step="0.0001"
+                                name="density"
+                                placeholder="Example: 0.9978"
+                                required>
+                        </div>
+
+
+                        <!-- pH -->
+
+                        <div class="form-group">
+                            <label>pH</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="ph"
+                                placeholder="Example: 3.51"
+                                required>
+                        </div>
+
+
+                        <!-- Sulphates -->
+
+                        <div class="form-group">
+                            <label>Sulphates</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="sulphates"
+                                placeholder="Example: 0.56"
+                                required>
+                        </div>
+
+
+                        <!-- Alcohol -->
+
+                        <div class="form-group">
+                            <label>Alcohol</label>
+                            <input
+                                type="number"
+                                step="0.1"
+                                name="alcohol"
+                                placeholder="Example: 9.4"
+                                required>
+                        </div>
+
+
+                        <!-- Wine Type -->
+
+                        <div class="form-group">
+                            <label>Wine Type</label>
+
+                            <select name="wine_type" required>
+
+                                <option value="">
+                                    Select Wine Type
+                                </option>
+
+                                <option value="red">
+                                    Red Wine
+                                </option>
+
+                                <option value="white">
+                                    White Wine
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FORM BUTTONS -->
+
+                    <div class="button-group">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary">
+
+                            <i class="fas fa-magic"></i>
+                            Predict Wine Quality
+
+                        </button>
+
+                        <button
+                            type="reset"
+                            class="btn btn-secondary">
+
+                            <i class="fas fa-rotate"></i>
+                            Reset Form
+
+                        </button>
+
+                    </div>
+
+                </fieldset>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         RIGHT PANEL
+    ======================================================= -->
+
+    <div class="right-panel">
+
+        <!-- PREDICTION RESULT -->
+
+        <div class="card">
+
+            <h3>
+                <i class="fas fa-chart-line"></i>
+                Prediction Result
+            </h3>
+
+            {% if prediction %}
+
+            <div class="result-card">
+
+                <h2>Predicted Wine Quality</h2>
+
+                <h1>
+                    Wine Quality Score : {{ prediction }}
+                </h1>
+
+                <p>Prediction Confidence</p>
+
+                <h3>{{ probability }}</h3>
+
+                <br>
+
+                <span class="badge badge-success">
+                    {{ prediction_status }}
+                </span>
+
+            </div>
+
+            {% else %}
+
+            <div class="info">
+
+                <strong>No Prediction Yet</strong>
+
+                <br><br>
+
+                Enter the wine characteristics and click
+                <strong>Predict Wine Quality</strong>.
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- MODEL PERFORMANCE / DEPLOYMENT SUMMARY -->
+
+        <div class="card">
+
+            <h3>
+                <i class="fas fa-award"></i>
+                Deployment Summary
+            </h3>
+
+            <table>
+
+                <tr>
+                    <th>Item</th>
+                    <th>Value</th>
+                </tr>
+
+                <tr>
+                    <td>Machine Learning Model</td>
+                    <td>{{ model_name }}</td>
+                </tr>
+
+                <tr>
+                    <td>Cross Validation Score</td>
+                    <td>{{ cv_score }}</td>
+                </tr>
+
+                <tr>
+                    <td>Total Features</td>
+                    <td>{{ feature_count }}</td>
+                </tr>
+
+                <tr>
+                    <td>Deployment</td>
+                    <td>
+                        <span class="badge badge-success">
+                            Running
+                        </span>
+                    </td>
+                </tr>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================================
+     SHAP EXPLAINABILITY
+=========================================================== -->
+
+<section id="shap">
+
+    <div class="card">
+
+        <h3>
+            <i class="fas fa-brain"></i>
+            Explainable Artificial Intelligence (SHAP)
+        </h3>
+
+        <p class="form-description">
+            SHAP explains how chemical properties contribute
+            to the wine quality predictions made by the model.
+        </p>
+
+        <div class="image-gallery">
+
+            <!-- SHAP GLOBAL FEATURE IMPORTANCE -->
+
+            <div class="image-card">
+
+                <h3>SHAP Global Feature Importance</h3>
+
+                <img
+                    src="{{ url_for('static', filename='images/shap_global_feature_importance.png') }}"
+                    alt="SHAP Global Feature Importance"
+                    class="shap-image">
+
+                <p>
+                    Overall impact of each feature across all wines.
+                </p>
+
+            </div>
+
+
+            <!-- SHAP LOCAL FORCE PLOT -->
+
+            <div class="image-card">
+
+                <h3>SHAP Local Force Plot</h3>
+
+                <img
+                    src="{{ url_for('static', filename='images/shap_local_force.png') }}"
+                    alt="SHAP Local Force Plot"
+                    class="shap-image">
+
+                <p>
+                    Local explanation showing the contribution
+                    of features to an individual prediction.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================================
+     ANALYTICS DASHBOARD
+     3 IMAGES PER ROW - 9 IMAGES TOTAL
+=========================================================== -->
+
+<section id="analytics">
+
+    <div class="card">
+
+        <h3>
+            <i class="fas fa-chart-bar"></i>
+            Analytics Dashboard
+        </h3>
+
+        <p class="form-description">
+            The following visualisations were generated during
+            the machine learning pipeline in Phase 1 and provide
+            insights into the Wine Quality dataset.
+        </p>
+
+
+        <!-- IMPORTANT:
+             analytics-gallery applies the separate 3-column CSS
+        -->
+
+        <div class="image-gallery analytics-gallery">
+
+
+            <!-- ================= ROW 1 ================= -->
+
+
+            <!-- 1. CORRELATION HEATMAP -->
+
+            <div class="image-card">
+
+                <h3>Correlation Heatmap</h3>
+
+                <img
+                    src="{{ url_for('static', filename='images/correlation_heatmap.png') }}"
+                    alt="Correlation Heatmap">
+
+                <p>
+                    Relationship among all physicochemical features.
+                </p>
+
+            </div>
+
+
+            <!-- 2. QUALITY CLASS DISTRIBUTION -->
+
+            <div class="image-card">
+
+                <h3>Quality Class Distribution</h3>
+
+                <img
+                    src="{{ url_for('static', filename='images/class_distribution.png') }}"
+                    alt="Quality Class Distribution">
+
+                <p>
+                    Distribution of wine quality classes before model training.
+                </p>
+
+            </div>
+
+
+            <!-- 3. ORIGINAL DATA OUTLIER PROFILE -->
+
+            <div class="image-card">
+
+                <h3>Original Data Outlier Profile</h3>
+
+                <img
+                    src="{{ url_for('static', filename='images/outlier_profile_original_data.png') }}"
+                    alt="Original Data Outlier Profile">
+
+                <p>
+                    Highlights potential outliers in the original dataset.
+                </p>
+
+            </div>
+
+
+            <!-- ================= ROW 2 ================= -->
+
+
+            <!-- 4. SELECTED MODEL CONFUSION MATRIX -->
+
+            <div class="image-card">
+
+                <h3>Selected Model Confusion Matrix</h3>
+
+                <img
+                    src="{{ url_for('static', filename='images/selected_model_confusion_matrix.png') }}"
+                    alt="Selected Model Confusion Matrix">
+
+                <p>
+                    Confusion matrix showing prediction performance
+                    across wine quality classes.
+                </p>
+
+            </div>
+
+
+            <!-- 5. ENGINEERED FEATURE DISTRIBUTION -->
+
+            <div class="image-card">
+
+                <h3>Engineered Feature Distribution</h3>
+
+                <img
+                    src="{{ url_for('static', filename='images/engineered_features_distribution.png') }}"
+                    alt="Engineered Feature Distribution">
+
+                <p>
+                    Distribution of the engineered wine characteristics.
+                </p>
+
+            </div>
+
+
+            <!-- 6. SCATTER PLOT ANALYSIS -->
+
+            <div class="image-card">
+
+                <h3>Scatter Plot Analysis</h3>
+
+                <img
+                    src="{{ url_for('static', filename='images/scatter_plots.png') }}"
+                    alt="Scatter Plot Analysis">
+
+                <p>
+                    Scatter plots illustrating relationships among
+                    key physicochemical properties.
+                </p>
+
+            </div>
+
+
+            <!-- ================= ROW 3 ================= -->
+
+
+            <!-- 7. FEATURE HISTOGRAMS -->
+
+            <div class="image-card">
+
+                <h3>Feature Histograms</h3>
+
+                <img
+                    src="{{ url_for('static', filename='images/histograms_all_features.png') }}"
+                    alt="Feature Histograms">
+
+                <p>
+                    Distribution of all continuous wine features
+                    used for model development.
+                </p>
+
+            </div>
+
+
+            <!-- 8. FEATURE BOXPLOTS -->
+
+            <div class="image-card">
+
+                <h3>Feature Boxplots</h3>
+
+                <img
+                    src="{{ url_for('static', filename='images/boxplots_all_features.png') }}"
+                    alt="Feature Boxplots">
+
+                <p>
+                    Boxplots highlighting the spread, quartiles
+                    and potential outliers for each feature.
+                </p>
+
+            </div>
+
+
+            <!-- 9. VIOLIN PLOT ANALYSIS -->
+
+            <div class="image-card">
+
+                <h3>Violin Plot Analysis</h3>
+
+                <img
+                    src="{{ url_for('static', filename='images/violin_plots_features_vs_quality.png') }}"
+                    alt="Violin Plot Analysis">
+
+                <p>
+                    Distribution of physicochemical properties
+                    across different wine quality classes.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================================
+     DEPLOYMENT INFORMATION
+=========================================================== -->
+
+<section class="deployment-summary">
+
+    <div class="card">
+
+        <h3>
+            <i class="fas fa-server"></i>
+            Deployment Summary
+        </h3>
+
+        <p>
+            This Flask application deploys the optimized Random Forest
+            machine learning pipeline developed during Phase 1.
+            The platform accepts physicochemical properties as input,
+            applies the preprocessing operations included in the
+            trained pipeline, predicts the wine quality score, and
+            presents SHAP-based explanations together with analytical
+            visualisations generated during model development.
+        </p>
+
+    </div>
+
+</section>
+
+
+{% endblock %}
